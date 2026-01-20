@@ -1,0 +1,18 @@
+cd /scratch/prj/rcmb_genai_transition
+
+curl -O https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/latest/chembl_36_sqlite.tar.gz
+tar -xzf chembl_36_sqlite.tar.gz
+
+#set paths
+CHEMBL_DB="chembl_36/chembl_36_sqlite/chembl_36.db"
+OUTPUT_CSV="chembl_36/chembl_36_sqlite/chembl_36_smiles.csv"
+
+#Extract canonical SMILES
+echo "Extracting SMILES from $CHEMBL_DB ..."
+
+sqlite3 -header -csv "$CHEMBL_DB" \
+"SELECT canonical_smiles FROM compound_structures WHERE canonical_smiles IS NOT NULL;" \
+> "$OUTPUT_CSV"
+
+echo "Number of molecules:"
+wc -l "$OUTPUT_CSV"
