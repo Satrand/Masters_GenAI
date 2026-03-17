@@ -1,0 +1,19 @@
+#1. Set up Conda environment manually
+conda create --name volgrids -y
+conda activate volgrids
+conda install python -y
+conda install -c conda-forge mdanalysis h5py -y
+
+#2. Install VolGrids
+pip install volgrids
+
+#Available applications in volgrids:
+  #  apbs     - Generate raw APBS potential grids for biomolecular structures.     
+  #  smiffer  - Calculate SMIFs for biomolecular structures.                       
+  #  veins    - Calculate VEINS for biomolecular structures.                       
+  #  vgtools  - Miscellaneous tools for volumetric grids.  
+
+#3. Run SMIFer
+volgrids smiffer ligand test_LIG.pdb -b test_ligand.chem
+
+#4. Visualize results in ChimeraX
