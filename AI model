@@ -27,3 +27,7 @@ python generate.py \
   --output test.pdb \
   --num-samples 1 \
   --mif-norm global
+
+#Save on local device
+scp -i ~/.ssh/create_msc k2587772@hpc.create.kcl.ac.uk:/scratch/prj/rcmb_genai_transition/CVAE_Stest/test.pdb ~/Desktop/
+
