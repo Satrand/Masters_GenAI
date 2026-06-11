@@ -1,0 +1,29 @@
+#Launch tensorboard on HPC /scratch: 
+tensorboard --logdir /scratch/prj/rcmb_genai_transition/CVAE_Stest/runs/ --port 6006 
+
+#On local terminal, run this command: 
+
+ssh -i ~/.ssh/create_msc \ 
+  -J k2587772@hpc.create.kcl.ac.uk \ 
+  -L 6006:localhost:6006 \ 
+  k2587772@erc-hpc-login2 
+
+#Or on Mac, use: 
+
+ssh \ 
+  -i ~/.ssh/create_msc \ 
+  -o "ProxyCommand=ssh -i ~/.ssh/create_msc -W %h:%p k2587772@hpc.create.kcl.ac.uk" \ 
+  -L 6006:localhost:6006 \ 
+  k2587772@erc-hpc-login2 
+
+#Or: 
+
+ssh -N -i ~/.ssh/create_msc -o "ProxyCommand=ssh -i ~/.ssh/create_msc -W %h:%p k2587772@hpc.create.kcl.ac.uk" -L 6006:localhost:6006 k2587772@erc-hpc-login2
+
+#Generate molecule
+python generate.py \
+  --checkpoint checkpoints/step_0090000.pt \
+  --cmap /scratch/prj/rcmb_genai_transition/chembl_db/50k_dataset/dataset/mol_10000/ligand10000.cmap \
+  --output test.pdb \
+  --num-samples 1 \
+  --mif-norm global
