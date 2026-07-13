@@ -325,42 +325,61 @@ def write_table_file(mol, resname="LIG", filename="table.chem"):
     with open(filename, "w") as f:
         f.write(outstr)
 
-# Pipeline for edge cases
-edge_cases = {
-    "pyrrole": "c1cc[nH]c1",
-    "imidazole": "c1ncc[nH]1",
-    "indole": "c1ccc2c(c1)[nH]cc2",
-    "amide": "CC(=O)NC",
-    "aniline": "c1ccccc1N",
-    "pyridinium": "c1cc[nH+]cc1",
-    "quinoline": "c1ccc2ncccc2c1",
-    "purine": "c1ncnc2n(ncc2n1)",
-    "histidine": "NCCc1ncc[nH]1",
-    "pyridine": "c1ccncc1"
-}
+# Pipeline
 
-output_dir = "edge_cases_output"
+input_csv = "filtered_organic_smiles.csv"
+output_dir = "output"
+n_mols = 50000
+start = 0
+
+df = pd.read_csv(input_csv)
+
+# Shuffle dataset
+df = df.sample(frac=1, random_state=42).reset_index(drop=True)
+
 os.makedirs(output_dir, exist_ok=True)
 
-print("Running EDGE CASE pipeline only...\n")
+records = []
+failed = []
 
-for name, smi in edge_cases.items():
-    print(f"Processing {name}: {smi}")
+t0 = time.time()
 
-    # 1. Generate 3D structure using YOUR pipeline
-    mol = smiles_to_3d(smi, optimize=True)
+success_count = 0
+i = 0
 
-    # 2. Create folder per molecule
-    mol_dir = os.path.join(output_dir, name)
-    os.makedirs(mol_dir, exist_ok=True)
+while success_count < n_mols and i < len(df):
 
-    # 3. Define output paths
-    pdb_path = os.path.join(mol_dir, f"{name}.pdb")
-    chem_path = os.path.join(mol_dir, f"{name}.chem")
+    smiles = df.iloc[i][ "canonical_smiles"]
+    mol_id = start + success_count + 1
 
-    # 4. Write outputs using YOUR pipeline functions
-    write_pdb_file(mol, pdb_path)
-    write_table_file(mol, filename=chem_path)
+    mol_dir = os.path.join(output_dir, f"mol_{mol_id}")
 
-print("\n=== DONE: all edge cases processed ===")
+    try:
+        mol = smiles_to_3d(smiles)
+        mol = set_pdb_info(mol)
+
+        os.makedirs(mol_dir, exist_ok=True)
+
+        pdb_file = os.path.join(mol_dir, f"ligand{mol_id}.pdb")
+        chem_file = os.path.join(mol_dir, f"table{mol_id}.chem")
+
+        write_pdb_file(mol, pdb_file)
+        write_table_file(mol, filename=chem_file)
+
+        records.append({"mol_id": mol_id, "smiles": smiles})
+        success_count += 1
+
+    except Exception as e:
+        print(f"Skipping molecule {mol_id}: {e}")
+        failed.append({"mol_id": mol_id, "smiles": smiles, "error": str(e)})
+
+    i += 1
+t1 = time.time()
+
+pd.DataFrame(records).to_csv(os.path.join(output_dir, "molecule_list.csv"), index=False)
+pd.DataFrame(failed).to_csv(os.path.join(output_dir, "failed_molecules.csv"), index=False)
+
+print("Success:", len(records))
+print("Failed:", len(failed))
+print("Time:", t1 - t0)
 
