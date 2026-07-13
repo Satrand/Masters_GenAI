@@ -52,7 +52,7 @@ Main data-processing script that:
 
 ### run_smiffer.sh
 
-Runs the SMIFFer software to convert each molecular structure and its associated feature file into a Spatial Molecular Interaction Field (**.cmap**).
+Runs the SMIFFer software to convert each molecular structure and its associated feature file into SMIFs (**.cmap**).
 
 ## Output
 
