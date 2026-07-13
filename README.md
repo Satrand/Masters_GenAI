@@ -41,14 +41,14 @@ Filters the downloaded molecules to retain single, organic, drug-like compounds 
 
 Main data-processing script that:
 
-* generates three-dimensional conformations using RDKit,
-* optimises molecular geometries using molecular mechanics force fields,
-* standardises molecular orientation by centring molecules and aligning them along their principal axes,
-* constructs molecular bounding boxes for interaction field calculations,
-* calculates physicochemical features including hydrogen-bond donors, hydrogen-bond acceptors, aromatic stacking sites, hydrophobicity, and partial atomic charges,
-* exports molecular structures as **.pdb** files,
-* generates SMIFFer feature files (**.chem**),
-* randomly samples **50,000 molecules** from the filtered ChEMBL dataset for model training.
+* generates three-dimensional conformations using RDKit
+* optimises molecular geometries using molecular mechanics force fields
+* standardises molecular orientation by centring molecules and aligning them along their principal axes
+* constructs molecular bounding boxes for interaction field calculations
+* calculates physicochemical features including hydrogen-bond donors, hydrogen-bond acceptors, aromatic stacking sites, hydrophobicity, and partial atomic charges
+* exports molecular structures as **.pdb** files
+* generates SMIFFer feature files (**.chem**)
+* randomly samples **50,000 molecules** from the filtered ChEMBL dataset for model training
 
 ### run_smiffer.sh
 
