@@ -6,6 +6,8 @@ input_path = "/scratch/prj/rcmb_genai_transition/chembl_36/chembl_36_sqlite/chem
 output_path = "filtered_organic_smiles.csv"
 
 excluded_atoms = {5, 14, 33, 34}  # B, Si, As, Se
+allowed_atoms = {1, 5, 6, 7, 8, 9, 15, 16, 17, 35, 53 }
+                #H, B, C, N, O, F, P, S, Cl, Br, I 
 
 def filter_molecule(smiles, max_heavy_atoms=34):
     mol = Chem.MolFromSmiles(smiles)
@@ -18,9 +20,12 @@ def filter_molecule(smiles, max_heavy_atoms=34):
     if not any(a.GetAtomicNum() == 6 for a in atoms):
         return False
 
-    # exclude unwanted elements
-    if any(a.GetAtomicNum() in excluded_atoms for a in atoms):
+    if any(a.GetAtomicNum() not in allowed_atoms for a in atoms):
         return False
+
+    # exclude unwanted elements
+    #if any(a.GetAtomicNum() in excluded_atoms for a in atoms):
+    #    return False
 
     # size filter
     if mol.GetNumHeavyAtoms() > max_heavy_atoms:
