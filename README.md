@@ -58,9 +58,9 @@ Runs the SMIFFer software to convert each molecular structure and its associated
 
 The pipeline produces a training dataset consisting of:
 
-* 50,000 molecular structures (**.pdb**),
-* corresponding molecular feature files (**.chem**),
-* corresponding Spatial Molecular Interaction Fields (**.cmap**).
+* 50,000 molecular structures (**.pdb**)
+* corresponding molecular feature files (**.chem**)
+* corresponding Spatial Molecular Interaction Fields (**.cmap**)
 
 ---
 
