@@ -31,7 +31,7 @@ The processing pipeline performs the following steps:
 
 ### Extract_SMILES.py
 
-Retrieves molecular structures from the ChEMBL database in canonical SMILES format.
+Retrieves molecular structures from the ChEMBL database in SMILES format.
 
 ### filter_dataset.py
 
