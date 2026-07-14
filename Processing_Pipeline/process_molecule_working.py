@@ -8,8 +8,8 @@ from rdkit.Chem.rdchem import AtomPDBResidueInfo
 from rdkit.Chem import AllChem, Crippen, GetSymmSSSR, rdMolDescriptors
 
 ## 3D Embedding and Optimization
-def smiles_to_3d(smiles, optimize=True, forcefield="MMFF", random_seed=42): #optimize:bo>
-    #Parse SMILES (i.e. read SMILES text and convert into an internal molecular graph re>
+def smiles_to_3d(smiles, optimize=True, forcefield="MMFF", random_seed=42): #optimize:bool (whether to run geometry optimization)
+    #Parse SMILES (i.e. read SMILES text and convert into an internal molecular graph representation that RDKit can understand)
     
     #print("!!!", smiles)
     resid = 1
@@ -176,12 +176,13 @@ def get_aromatic_rings(mol):
     aromatic_rings = [] 
     # check all the rings to see whether they are aromatic
     for ring in rings:
-        is_aromatic_ring = all(mol.GetAtomWithIdx(atom_idx).GetIsAromatic() for atom_idx>
+        is_aromatic_ring = all(mol.GetAtomWithIdx(atom_idx).GetIsAromatic() for atom_idx in ring)
         if is_aromatic_ring:
-            aromatic_rings.append([mol.GetAtomWithIdx(idx).GetProp("atom_name") for idx >
+            aromatic_rings.append([mol.GetAtomWithIdx(idx).GetProp("atom_name") for idx in ring])
     return aromatic_rings
 
-                                  ## HBA/HBD (unchanged)
+
+## HBA/HBD (unchanged)
 def detect_acceptors(mol,complexT=True):
     #acceptors = []
     #for atom in mol.GetAtoms():
@@ -196,7 +197,7 @@ def detect_acceptors(mol,complexT=True):
     #return sorted(set(acceptors))
     if complexT:
         #hba_pattern = "[#8,#7,#16,#9,#17, #35,#53;H0,H1,H2]"
-        hba_pattern = "[$([O,S;H1;v2]-[!$(*=[O,N,P,S])]),$([O,S;H0;v2]),$([O,S;-]),$([N;v>
+        hba_pattern = "[$([O,S;H1;v2]-[!$(*=[O,N,P,S])]),$([O,S;H0;v2]),$([O,S;-]),$([N;v3;!$(N-*=!@[O,N,P,S])]),$([nH0,o,s;+0])]"
     else:
         hba_pattern = "[#7,#8;!H0;!$(C#[#7,#8])]" 
         
@@ -246,7 +247,7 @@ def set_pdb_info(mol, resname="LIG", chainid="A", resid=1):
     for idx, atom in enumerate(mol.GetAtoms()):
         info = AtomPDBResidueInfo()
         info.SetName(names[idx])
-        info.SetResidueName("LIG")
+        info.SetResidueName(resname)
         info.SetResidueNumber(resid)
         info.SetChainId(chainid)
         atom.SetMonomerInfo(info)
@@ -267,7 +268,7 @@ def find_pi_systems(mol):
 
 
 def write_pdb_file(mol, filename="ligand.pdb", resname="LIG"):
-    mol = set_pdb_info(mol, resname=resname)
+     mol = set_pdb_info(mol, resname=resname)
 
     for atom in mol.GetAtoms():
         info = atom.GetMonomerInfo()
@@ -325,6 +326,7 @@ def write_table_file(mol, resname="LIG", filename="table.chem"):
     with open(filename, "w") as f:
         f.write(outstr)
 
+
 # Pipeline
 
 input_csv = "filtered_organic_smiles.csv"
@@ -372,8 +374,10 @@ while success_count < n_mols and i < len(df):
     except Exception as e:
         print(f"Skipping molecule {mol_id}: {e}")
         failed.append({"mol_id": mol_id, "smiles": smiles, "error": str(e)})
+        raise e
 
     i += 1
+
 t1 = time.time()
 
 pd.DataFrame(records).to_csv(os.path.join(output_dir, "molecule_list.csv"), index=False)
@@ -382,4 +386,3 @@ pd.DataFrame(failed).to_csv(os.path.join(output_dir, "failed_molecules.csv"), in
 print("Success:", len(records))
 print("Failed:", len(failed))
 print("Time:", t1 - t0)
-
