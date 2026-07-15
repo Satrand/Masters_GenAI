@@ -105,17 +105,22 @@ def plot_kde(property_name, xlabel, bw_adjust=1):
         clip=(xmin, xmax)
     )
 
-    plt.xlabel(xlabel)
-    plt.ylabel("Density")
+    plt.xlabel(xlabel, fontsize=16)
+    plt.ylabel("Density", fontsize=16)
+
+    # Increase tick label size
+    plt.xticks(fontsize=14)
+    plt.yticks(fontsize=14)
 
     # ============================================================
-    # LEGEND ABOVE PLOT (KEY FIX)
+    # LEGEND ABOVE PLOT
     # ============================================================
     plt.legend(
         frameon=False,
         loc="upper center",
         bbox_to_anchor=(0.5, 1.18),
-        ncol=2
+        ncol=2,
+        fontsize=14
     )
 
     plt.tight_layout()
@@ -125,6 +130,7 @@ def plot_kde(property_name, xlabel, bw_adjust=1):
     plt.close()
 
     print(f"Saved: {outfile}")
+
 # ============================================================
 # GENERATE FIGURES
 # ============================================================
