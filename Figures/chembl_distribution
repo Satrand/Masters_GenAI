@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-from PIL import Image
+from PIL import Image, ImageChops
 
 from rdkit import Chem
 from rdkit.Chem import AllChem
@@ -104,37 +104,51 @@ labels = [
 # -----------------------------
 # RDKit RENDERING (BIG + COLORED)
 # -----------------------------
-def draw_scaled_molecule(mol):
+def trim(im):
+    """Crop away white borders."""
+    bg = Image.new(im.mode, im.size, (255, 255, 255))
+    diff = ImageChops.difference(im.convert("RGB"), bg)
+    bbox = diff.getbbox()
+    if bbox:
+        return im.crop(bbox)
+    return im
 
-    size = (3400, 3400)
+
+def draw_scaled_molecule(mol, size=(4000, 4000), padding=0.02):
 
     drawer = rdMolDraw2D.MolDraw2DCairo(*size)
     opts = drawer.drawOptions()
 
-    opts.padding = 0.10
+    opts.padding = padding
 
-    opts.fixedFontSize = 150
-    opts.minFontSize = 100
-    opts.bondLineWidth = 16
+    opts.fixedFontSize = 170
+    opts.minFontSize = 120
+    opts.bondLineWidth = 18
     opts.multipleBondOffset = 0.35
 
     drawer.DrawMolecule(mol)
     drawer.FinishDrawing()
 
     png = drawer.GetDrawingText()
-    return Image.open(io.BytesIO(png))
 
+    img = Image.open(io.BytesIO(png))
+    img = trim(img)
 
-mol_images = [draw_scaled_molecule(m) for m in mols]
+    return img
+mol_images = [
+    draw_scaled_molecule(mols[0], size=(3200, 3200)),
+    draw_scaled_molecule(mols[1], size=(3200, 3200)),
+    draw_scaled_molecule(mols[2], size=(7000, 7000)),   # much larger
+]
 
 # -----------------------------
 # FIGURE LAYOUT
 # -----------------------------
-fig = plt.figure(figsize=(15, 14), dpi=200)
+fig = plt.figure(figsize=(15, 16), dpi=200)
 
 gs = fig.add_gridspec(
     5, 3,
-    height_ratios=[3.2, 3.2, 0.5, 1.2, 3.4]
+    height_ratios=[3.0, 3.0, 0.2, 0.8, 5.8]
 )
 
 # -----------------------------
@@ -187,7 +201,7 @@ ax_title.text(
 
 gs_bottom = gs[4, :].subgridspec(
     2, 2,
-    height_ratios=[1.0, 1.35],   # give the largest molecule more room
+    height_ratios=[1, 2.6],   # give the largest molecule more room
     width_ratios=[1, 1],
     hspace=0.45,
     wspace=0.30,
@@ -208,7 +222,7 @@ axes = [ax_small, ax_median, ax_large]
 
 for ax, img in zip(axes, mol_images):
 
-    ax.imshow(img, interpolation="nearest")
+    ax.imshow(img, interpolation="nearest", aspect="auto")
 
     ax.axis("off")
 
