@@ -1,0 +1,13 @@
+ATOM      1 O1   LIG A   1      -1.294  -0.605  -0.427  1.00  0.00            O
+ATOM      2 P2   LIG A   1       0.010  -0.020   0.265  1.00  0.00            P
+ATOM      3 O3   LIG A   1       0.059  -0.268   1.729  1.00  0.00            O
+ATOM      4 O4   LIG A   1       0.033   1.500  -0.188  1.00  0.00            O
+ATOM      5 O5   LIG A   1       1.224  -0.672  -0.523  1.00  0.00            O
+HETATM    6 H6   UNL A   1      -2.011  -0.700   0.228  1.00  0.00            H
+HETATM    7 H7   UNL A   1      -0.003   1.570  -1.159  1.00  0.00            H
+HETATM    8 H8   UNL A   1       1.983  -0.805   0.075  1.00  0.00            H
+CONECT    1    2    6
+CONECT    2    3    3    4    5
+CONECT    4    7
+CONECT    5    8
+END

@@ -1,0 +1,19 @@
+ATOM      1 C1   LIG A   1       0.804  -1.140  -0.008  1.00  0.00            C
+ATOM      2 C2   LIG A   1       1.389   0.126  -0.028  1.00  0.00            C
+ATOM      3 C3   LIG A   1       0.585   1.266  -0.020  1.00  0.00            C
+ATOM      4 C4   LIG A   1      -0.804   1.140   0.008  1.00  0.00            C
+ATOM      5 C5   LIG A   1      -1.389  -0.126   0.028  1.00  0.00            C
+ATOM      6 C6   LIG A   1      -0.585  -1.266   0.020  1.00  0.00            C
+HETATM    7 H1   UNL A   1       1.430  -2.028  -0.015  1.00  0.00            H
+HETATM    8 H2   UNL A   1       2.471   0.224  -0.050  1.00  0.00            H
+HETATM    9 H3   UNL A   1       1.041   2.252  -0.035  1.00  0.00            H
+HETATM   10 H4   UNL A   1      -1.430   2.028   0.015  1.00  0.00            H
+HETATM   11 H5   UNL A   1      -2.471  -0.224   0.050  1.00  0.00            H
+HETATM   12 H6   UNL A   1      -1.041  -2.252   0.035  1.00  0.00            H
+CONECT    1    2    2    6    7
+CONECT    2    3    8
+CONECT    3    4    4    9
+CONECT    4    5   10
+CONECT    5    6    6   11
+CONECT    6   12
+END
