@@ -184,32 +184,40 @@ ax_title.text(
 # -----------------------------
 # PANEL B
 # -----------------------------
+
 gs_bottom = gs[4, :].subgridspec(
-    1, 3,
-    width_ratios=[1.2, 1.6, 2.2]
+    2, 2,
+    height_ratios=[1.0, 1.35],   # give the largest molecule more room
+    width_ratios=[1, 1],
+    hspace=0.45,
+    wspace=0.30,
 )
 
-axes = [
-    fig.add_subplot(gs_bottom[0, 0]),
-    fig.add_subplot(gs_bottom[0, 1]),
-    fig.add_subplot(gs_bottom[0, 2]),
-]
+# Top row
+ax_small = fig.add_subplot(gs_bottom[0, 0])
+ax_median = fig.add_subplot(gs_bottom[0, 1])
+
+# Bottom row (spans both columns)
+ax_large = fig.add_subplot(gs_bottom[1, :])
+
+axes = [ax_small, ax_median, ax_large]
 
 # -----------------------------
-# IMAGES (FIXED ALIGNMENT)
+# IMAGES
 # -----------------------------
+
 for ax, img in zip(axes, mol_images):
 
-    ax.imshow(img, aspect="equal", interpolation="nearest")
+    ax.imshow(img, interpolation="nearest")
 
     ax.axis("off")
 
-    # 🔥 FIX: prevents vertical drift between molecules
-    ax.set_anchor('C')
+    ax.set_anchor("C")
 
 # -----------------------------
-# LABELS (figure-level, stable)
+# LABELS
 # -----------------------------
+
 fig.canvas.draw()
 
 for ax, label in zip(axes, labels):
@@ -218,13 +226,12 @@ for ax, label in zip(axes, labels):
 
     fig.text(
         bbox.x0 + bbox.width / 2,
-        bbox.y0 - 0.04,
+        bbox.y0 - 0.02,
         label,
         ha="center",
         va="top",
         fontsize=15,
     )
-
 # -----------------------------
 # FINAL SPACING
 # -----------------------------
