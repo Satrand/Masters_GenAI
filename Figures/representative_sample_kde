@@ -1,0 +1,140 @@
+import os
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+from rdkit import Chem
+from rdkit.Chem import Descriptors
+
+# ============================================================
+# PATHS
+# ============================================================
+
+full_path = "/scratch/prj/rcmb_genai_transition/chembl_db/filtered_organic_smiles.csv"
+sample_path = "/scratch/prj/rcmb_genai_transition/chembl_db/50k_dataset/dataset/molecule_list.csv"
+
+output_dir = "/scratch/prj/rcmb_genai_transition/chembl_db/representativeness_figures_kde"
+os.makedirs(output_dir, exist_ok=True)
+
+# ============================================================
+# LOAD DATA
+# ============================================================
+
+print("Loading datasets...")
+
+df_full = pd.read_csv(full_path)
+df_sample = pd.read_csv(sample_path)
+
+print("\nFull dataset columns:", df_full.columns.tolist())
+print("Sample dataset columns:", df_sample.columns.tolist())
+
+# ============================================================
+# SMILES COLUMN HANDLING
+# ============================================================
+
+df_full = df_full.rename(columns={"canonical_smiles": "smiles"})
+df_sample = df_sample.rename(columns={"smiles": "smiles"})
+
+# ============================================================
+# PROPERTY CALCULATION
+# ============================================================
+
+def calculate_properties(smiles):
+    mol = Chem.MolFromSmiles(smiles)
+
+    if mol is None:
+        return None, None, None
+
+    heavy_atoms = mol.GetNumHeavyAtoms()
+    molecular_weight = Descriptors.MolWt(mol)
+    logp = Descriptors.MolLogP(mol)
+
+    return heavy_atoms, molecular_weight, logp
+
+
+print("\nCalculating properties for full dataset...")
+df_full[["HA", "MW", "LogP"]] = pd.DataFrame(
+    df_full["smiles"].apply(calculate_properties).tolist(),
+    index=df_full.index
+)
+
+print("Calculating properties for sample dataset...")
+df_sample[["HA", "MW", "LogP"]] = pd.DataFrame(
+    df_sample["smiles"].apply(calculate_properties).tolist(),
+    index=df_sample.index
+)
+
+# ============================================================
+# CLEAN INVALID MOLECULES
+# ============================================================
+
+df_full = df_full.dropna(subset=["HA", "MW", "LogP"])
+df_sample = df_sample.dropna(subset=["HA", "MW", "LogP"])
+
+print(f"\nValid full molecules: {len(df_full):,}")
+print(f"Valid sample molecules: {len(df_sample):,}")
+
+# ============================================================
+# KDE PLOTTING FUNCTION
+# ============================================================
+
+def plot_kde(property_name, xlabel, bw_adjust=1):
+
+    plt.figure(figsize=(8, 5))
+
+    xmin = min(df_full[property_name].min(), df_sample[property_name].min())
+    xmax = max(df_full[property_name].max(), df_sample[property_name].max())
+
+    sns.kdeplot(
+        df_full[property_name],
+        label="Full filtered ChEMBL dataset",
+        fill=True,
+        alpha=0.35,
+        linewidth=2,
+        bw_adjust=bw_adjust,
+        clip=(xmin, xmax)
+    )
+
+    sns.kdeplot(
+        df_sample[property_name],
+        label="50k training sample",
+        fill=True,
+        alpha=0.35,
+        linewidth=2,
+        bw_adjust=bw_adjust,
+        clip=(xmin, xmax)
+    )
+
+    plt.xlabel(xlabel)
+    plt.ylabel("Density")
+
+    # ============================================================
+    # LEGEND ABOVE PLOT (KEY FIX)
+    # ============================================================
+    plt.legend(
+        frameon=False,
+        loc="upper center",
+        bbox_to_anchor=(0.5, 1.18),
+        ncol=2
+    )
+
+    plt.tight_layout()
+
+    outfile = os.path.join(output_dir, f"{property_name}_kde.png")
+    plt.savefig(outfile, dpi=300, bbox_inches="tight")
+    plt.close()
+
+    print(f"Saved: {outfile}")
+# ============================================================
+# GENERATE FIGURES
+# ============================================================
+
+# Heavy atom count (discrete → needs stronger smoothing)
+plot_kde("HA", "Heavy atom count", bw_adjust=3)
+
+# Continuous properties
+plot_kde("MW", "Molecular weight (Da)", bw_adjust=1)
+plot_kde("LogP", "LogP", bw_adjust=1)
+
+print("\nDone.")
+print(f"All KDE figures saved to:\n{output_dir}")
