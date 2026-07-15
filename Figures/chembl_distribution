@@ -136,9 +136,9 @@ def draw_scaled_molecule(mol, size=(4000, 4000), padding=0.02):
 
     return img
 mol_images = [
-    draw_scaled_molecule(mols[0], size=(1200, 1200)),
-    draw_scaled_molecule(mols[1], size=(1600, 1600)),
-    draw_scaled_molecule(mols[2], size=(2500, 2500)),   # much larger
+    draw_scaled_molecule(mols[0], size=(1200, 1800)),
+    draw_scaled_molecule(mols[1], size=(1600, 2200)),
+    draw_scaled_molecule(mols[2], size=(2500, 3500)),   # much larger
 ]
 
 # -----------------------------
@@ -222,7 +222,7 @@ axes = [ax_small, ax_median, ax_large]
 
 for ax, img in zip(axes, mol_images):
 
-    ax.imshow(img, interpolation="nearest", aspect="auto")
+    ax.imshow(img, interpolation="nearest", aspect="equal")
 
     ax.axis("off")
 
