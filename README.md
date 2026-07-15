@@ -89,14 +89,6 @@ This directory contains the implementation of the CVAE used for molecular genera
 
 This directory contains  scripts and supporting files used to generate figures presented in the dissertation.
 
-The contents include:
-
-- scripts for plotting and visualisation
-- processed data files required to reproduce figures
-- supporting files used during figure generation
-
-These files are provided to ensure transparency and reproducibility of the figures included in the dissertation.
-
 ---
 
 # Intermediate
