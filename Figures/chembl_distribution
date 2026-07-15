@@ -121,9 +121,9 @@ def draw_scaled_molecule(mol, size=(4000, 4000), padding=0.02):
 
     opts.padding = padding
 
-    opts.fixedFontSize = 170
-    opts.minFontSize = 120
-    opts.bondLineWidth = 18
+    opts.fixedFontSize = 60
+    opts.minFontSize = 30
+    opts.bondLineWidth = 5
     opts.multipleBondOffset = 0.35
 
     drawer.DrawMolecule(mol)
@@ -136,9 +136,9 @@ def draw_scaled_molecule(mol, size=(4000, 4000), padding=0.02):
 
     return img
 mol_images = [
-    draw_scaled_molecule(mols[0], size=(3200, 3200)),
-    draw_scaled_molecule(mols[1], size=(3200, 3200)),
-    draw_scaled_molecule(mols[2], size=(7000, 7000)),   # much larger
+    draw_scaled_molecule(mols[0], size=(1200, 1200)),
+    draw_scaled_molecule(mols[1], size=(1600, 1600)),
+    draw_scaled_molecule(mols[2], size=(2500, 2500)),   # much larger
 ]
 
 # -----------------------------
