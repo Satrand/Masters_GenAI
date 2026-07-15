@@ -6,9 +6,6 @@ import seaborn as sns
 from rdkit import Chem
 from rdkit.Chem import Descriptors
 
-# ============================================================
-# PATHS
-# ============================================================
 
 full_path = "/scratch/prj/rcmb_genai_transition/chembl_db/filtered_organic_smiles.csv"
 sample_path = "/scratch/prj/rcmb_genai_transition/chembl_db/50k_dataset/dataset/molecule_list.csv"
@@ -16,9 +13,7 @@ sample_path = "/scratch/prj/rcmb_genai_transition/chembl_db/50k_dataset/dataset/
 output_dir = "/scratch/prj/rcmb_genai_transition/chembl_db/representativeness_figures_kde"
 os.makedirs(output_dir, exist_ok=True)
 
-# ============================================================
 # LOAD DATA
-# ============================================================
 
 print("Loading datasets...")
 
@@ -28,16 +23,12 @@ df_sample = pd.read_csv(sample_path)
 print("\nFull dataset columns:", df_full.columns.tolist())
 print("Sample dataset columns:", df_sample.columns.tolist())
 
-# ============================================================
-# SMILES COLUMN HANDLING
-# ============================================================
+# SMILES COLUMN 
 
 df_full = df_full.rename(columns={"canonical_smiles": "smiles"})
 df_sample = df_sample.rename(columns={"smiles": "smiles"})
 
-# ============================================================
 # PROPERTY CALCULATION
-# ============================================================
 
 def calculate_properties(smiles):
     mol = Chem.MolFromSmiles(smiles)
@@ -64,9 +55,7 @@ df_sample[["HA", "MW", "LogP"]] = pd.DataFrame(
     index=df_sample.index
 )
 
-# ============================================================
 # CLEAN INVALID MOLECULES
-# ============================================================
 
 df_full = df_full.dropna(subset=["HA", "MW", "LogP"])
 df_sample = df_sample.dropna(subset=["HA", "MW", "LogP"])
@@ -74,9 +63,7 @@ df_sample = df_sample.dropna(subset=["HA", "MW", "LogP"])
 print(f"\nValid full molecules: {len(df_full):,}")
 print(f"Valid sample molecules: {len(df_sample):,}")
 
-# ============================================================
 # KDE PLOTTING FUNCTION
-# ============================================================
 
 def plot_kde(property_name, xlabel, bw_adjust=1):
 
@@ -112,9 +99,7 @@ def plot_kde(property_name, xlabel, bw_adjust=1):
     plt.xticks(fontsize=14)
     plt.yticks(fontsize=14)
 
-    # ============================================================
-    # LEGEND ABOVE PLOT
-    # ============================================================
+    # LEGEND 
     plt.legend(
         frameon=False,
         loc="upper center",
@@ -131,11 +116,9 @@ def plot_kde(property_name, xlabel, bw_adjust=1):
 
     print(f"Saved: {outfile}")
 
-# ============================================================
 # GENERATE FIGURES
-# ============================================================
 
-# Heavy atom count (discrete → needs stronger smoothing)
+# Heavy atom count 
 plot_kde("HA", "Heavy atom count", bw_adjust=3)
 
 # Continuous properties
