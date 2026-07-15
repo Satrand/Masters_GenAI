@@ -1,0 +1,91 @@
+from rdkit import Chem
+from rdkit.Chem import Draw
+from rdkit.Chem import AllChem
+from rdkit.Chem.rdMolDescriptors import CalcMolFormula
+
+# ----------------------------
+# Representative failure cases
+# ----------------------------
+examples = [
+    ("3D embedding failure",
+     "C=C1C(=O)[C@]23C[C@H]1C[C@H](O)[C@H]2[C@@]12CO[C@@]3(O)[C@@H](O)[C@@H]1C(C)(C)CC[C@@H]2OC(C)=O"),
+
+    ("UFF convergence failure (Boron)",
+     "O=P1(Oc2ccccc2)NNP2(=NP(Cl)(Cl)=NP(Cl)(Cl)=N2)NN1"),
+
+    ("Flexible drug-like UFF failure",
+     "Cc1ccc(C[C@H](NC(=O)CC(NC(=O)c2ccccc2)c2cccc(F)c2)B(O)O)cc1"),
+
+    ("Kekulization failure",
+     "c1ccc2c(c1)N=c1ccccc1=P21c2ccccc2Nc2ccccc21")
+]
+
+# ----------------------------
+# Convert SMILES → molecules
+# ----------------------------
+mols = []
+legends = []
+panel_labels = ["A", "B", "C", "D"]
+
+for i, (label, smi) in enumerate(examples):
+    mol = Chem.MolFromSmiles(smi)
+
+    if mol is None:
+        print(f"Failed to parse: {label}")
+        continue
+
+    AllChem.Compute2DCoords(mol)
+
+    formula = CalcMolFormula(mol)
+
+    # keep legend simple (no SMILES)
+    legends.append(f"{label}\n\n\n\n\n\n\n \n{formula}")
+
+    mols.append(mol)
+
+# ----------------------------
+# High-quality grid image
+# ----------------------------
+img = Draw.MolsToGridImage(
+    mols,
+    molsPerRow=2,
+    subImgSize=(550, 550),  # bigger = less pixelation
+    legends=legends,
+    useSVG=False,
+    legendFontSize=28
+)
+
+img.save("failed_molecules_grid.png")
+
+# ----------------------------
+# Add A/B/C/D overlay in top-left corner
+# (simple PIL edit, no RDKit version dependency)
+# ----------------------------
+from PIL import Image, ImageDraw, ImageFont
+font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 48)
+
+im = Image.open("failed_molecules_grid.png")
+draw = ImageDraw.Draw(im)
+
+W, H = im.size
+cols = 2
+rows = 2
+
+cell_w = W // cols
+cell_h = H // rows
+
+labels = ["A", "B", "C", "D"]
+
+for i, letter in enumerate(labels):
+    r = i // cols
+    c = i % cols
+
+    x = c * cell_w + 15
+    y = r * cell_h + 10
+
+    draw.text((x, y), letter, fill="black", font=font)
+
+im.save("failed_molecules_grid.png")
+
+print("Saved: failed_molecules_grid.png")
+
