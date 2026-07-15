@@ -3,9 +3,7 @@ from rdkit.Chem import Draw
 from rdkit.Chem import AllChem
 from rdkit.Chem.rdMolDescriptors import CalcMolFormula
 
-# ----------------------------
 # Representative failure cases
-# ----------------------------
 examples = [
     ("3D embedding failure",
      "C=C1C(=O)[C@]23C[C@H]1C[C@H](O)[C@H]2[C@@]12CO[C@@]3(O)[C@@H](O)[C@@H]1C(C)(C)CC[C@@H]2OC(C)=O"),
@@ -20,9 +18,7 @@ examples = [
      "c1ccc2c(c1)N=c1ccccc1=P21c2ccccc2Nc2ccccc21")
 ]
 
-# ----------------------------
-# Convert SMILES → molecules
-# ----------------------------
+# Convert SMILES to molecules
 mols = []
 legends = []
 panel_labels = ["A", "B", "C", "D"]
@@ -43,9 +39,6 @@ for i, (label, smi) in enumerate(examples):
 
     mols.append(mol)
 
-# ----------------------------
-# High-quality grid image
-# ----------------------------
 img = Draw.MolsToGridImage(
     mols,
     molsPerRow=2,
@@ -57,10 +50,6 @@ img = Draw.MolsToGridImage(
 
 img.save("failed_molecules_grid.png")
 
-# ----------------------------
-# Add A/B/C/D overlay in top-left corner
-# (simple PIL edit, no RDKit version dependency)
-# ----------------------------
 from PIL import Image, ImageDraw, ImageFont
 font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 48)
 
