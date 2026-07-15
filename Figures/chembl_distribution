@@ -146,9 +146,9 @@ def draw_scaled_molecule(mol, size=(4000, 4000), padding=0.02, font_size=80, sca
 
     return img
 mol_images = [
-    draw_scaled_molecule(mols[0], size=(2200, 2600), padding=0.01, font_size=130),
+    draw_scaled_molecule(mols[0], size=(2200, 2600), padding=0.01, font_size=130, scale =1.1),
     draw_scaled_molecule(mols[1], size=(2200, 2600), padding=0.02, font_size=100),
-    draw_scaled_molecule(mols[2], size=(3500, 5000), padding=0.0, scale=1.35),   # much larger
+    draw_scaled_molecule(mols[2], size=(3500, 5000), padding=0.0, scale=1.6),   # much larger
 ]
 
 # -----------------------------
