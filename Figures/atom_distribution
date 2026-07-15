@@ -4,9 +4,7 @@ from rdkit import Chem
 import matplotlib.pyplot as plt
 from collections import Counter
 
-# =============================================================================
 # Input files
-# =============================================================================
 
 FULL_DATASET = "/scratch/prj/rcmb_genai_transition/chembl_db/filtered_organic_smiles.csv"
 SAMPLE_DATASET = "/scratch/prj/rcmb_genai_transition/chembl_db/50k_dataset/dataset/molecule_list.csv"
@@ -17,10 +15,6 @@ ELEMENTS = ["H", "B", "C", "N", "O", "F", "P", "S", "Cl", "Br", "I"]
 # Elements to display in the figure
 # (H and C are usually ~100% in organic datasets and can dominate the plot)
 PLOT_ELEMENTS = ["B", "N", "O", "F", "P", "S", "Cl", "Br", "I"]
-
-# =============================================================================
-# Functions
-# =============================================================================
 
 def get_element_presence_percentages(df, smiles_col):
     """
@@ -62,11 +56,7 @@ def get_element_presence_percentages(df, smiles_col):
 
     return percentages, valid_molecules
 
-
-# =============================================================================
 # Load datasets
-# =============================================================================
-
 print("Loading datasets...")
 df_full = pd.read_csv(FULL_DATASET)
 df_sample = pd.read_csv(SAMPLE_DATASET)
@@ -84,9 +74,7 @@ print(df_sample.columns.tolist())
 print(f"\nFull dataset size: {len(df_full):,}")
 print(f"Sample dataset size: {len(df_sample):,}")
 
-# =============================================================================
 # Calculate elemental composition
-# =============================================================================
 
 print("\nCalculating elemental composition...")
 
@@ -96,9 +84,7 @@ sample_pct, sample_valid = get_element_presence_percentages(df_sample, "smiles")
 print(f"Valid molecules in full dataset: {full_valid:,}")
 print(f"Valid molecules in sample dataset: {sample_valid:,}")
 
-# =============================================================================
 # Create results table
-# =============================================================================
 
 results_df = pd.DataFrame({
     "Element": ELEMENTS,
@@ -121,9 +107,7 @@ results_df.to_csv(
     index=False
 )
 
-# =============================================================================
 # Plot figure
-# =============================================================================
 
 plot_df = results_df[
     results_df["Element"].isin(PLOT_ELEMENTS)
@@ -168,9 +152,7 @@ plt.savefig(
 
 plt.show()
 
-# =============================================================================
-# Create thesis-ready table
-# =============================================================================
+# Create table
 
 table_df = results_df.copy()
 table_df.columns = [
