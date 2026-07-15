@@ -114,15 +114,16 @@ def trim(im):
     return im
 
 
-def draw_scaled_molecule(mol, size=(4000, 4000), padding=0.02):
+def draw_scaled_molecule(mol, size=(4000, 4000), padding=0.02, font_size=80):
 
     drawer = rdMolDraw2D.MolDraw2DCairo(*size)
     opts = drawer.drawOptions()
 
     opts.padding = padding
 
-    opts.fixedFontSize = 60
-    opts.minFontSize = 30
+    opts.fixedFontSize = font_size
+    opts.minFontSize = font_size
+    opts.maxFontSize = font_size
     opts.bondLineWidth = 5
     opts.multipleBondOffset = 0.35
 
@@ -136,8 +137,8 @@ def draw_scaled_molecule(mol, size=(4000, 4000), padding=0.02):
 
     return img
 mol_images = [
-    draw_scaled_molecule(mols[0], size=(1800, 2200)),
-    draw_scaled_molecule(mols[1], size=(2200, 2600)),
+    draw_scaled_molecule(mols[0], size=(2200, 2600), font_size=120),
+    draw_scaled_molecule(mols[1], size=(2200, 2600), font_size=100),
     draw_scaled_molecule(mols[2], size=(3500, 5000)),   # much larger
 ]
 
@@ -203,6 +204,14 @@ ax_median = fig.add_subplot(gs_bottom[0, 1])
 # Bottom row (spans both columns)
 ax_large = fig.add_subplot(gs_bottom[1, :])
 
+# Shift the large molecule panel downward
+pos = ax_large.get_position()
+ax_large.set_position([
+    pos.x0,
+    pos.y0 - 0.20,   # increase this value to move further down
+    pos.width,
+    pos.height
+])
 axes = [ax_small, ax_median, ax_large]
 
 # -----------------------------
