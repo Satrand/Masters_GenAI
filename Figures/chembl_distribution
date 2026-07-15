@@ -136,9 +136,9 @@ def draw_scaled_molecule(mol, size=(4000, 4000), padding=0.02):
 
     return img
 mol_images = [
-    draw_scaled_molecule(mols[0], size=(1200, 1800)),
-    draw_scaled_molecule(mols[1], size=(1600, 2200)),
-    draw_scaled_molecule(mols[2], size=(2500, 3500)),   # much larger
+    draw_scaled_molecule(mols[0], size=(1800, 2200)),
+    draw_scaled_molecule(mols[1], size=(2200, 2600)),
+    draw_scaled_molecule(mols[2], size=(3500, 5000)),   # much larger
 ]
 
 # -----------------------------
@@ -148,7 +148,7 @@ fig = plt.figure(figsize=(15, 16), dpi=200)
 
 gs = fig.add_gridspec(
     5, 3,
-    height_ratios=[3.0, 3.0, 0.2, 0.8, 5.8]
+    height_ratios=[3.0, 3.0, 0.15, 0.5, 7.5]
 )
 
 # -----------------------------
@@ -162,17 +162,6 @@ ax1.hist(df_plot["heavy_atoms"], bins=bins, edgecolor="black")
 
 ax1.axvline(cutoff, linestyle="--", linewidth=3, color="red")
 
-# 🔥 CUT-OFF LABEL (FIXED)
-ax1.annotate(
-    "Cutoff = 34",
-    xy=(cutoff, ax1.get_ylim()[1]),
-    xytext=(x_max * 0.98, ax1.get_ylim()[1] * 0.95),
-    ha="right",
-    va="top",
-    fontsize=16,
-    color="red",
-    bbox=dict(boxstyle="round,pad=0.3", facecolor="white", alpha=0.9),
-)
 
 ax1.set_xlim(0, x_max)
 
@@ -201,10 +190,10 @@ ax_title.text(
 
 gs_bottom = gs[4, :].subgridspec(
     2, 2,
-    height_ratios=[1, 2.6],   # give the largest molecule more room
+    height_ratios=[1.2, 3.8],   # give the largest molecule more room
     width_ratios=[1, 1],
-    hspace=0.45,
-    wspace=0.30,
+    hspace=0.15,
+    wspace=0.25,
 )
 
 # Top row
@@ -223,6 +212,8 @@ axes = [ax_small, ax_median, ax_large]
 for ax, img in zip(axes, mol_images):
 
     ax.imshow(img, interpolation="nearest", aspect="equal")
+    ax.set_xlim(0, img.width)
+    ax.set_ylim(img.height, 0)
 
     ax.axis("off")
 
@@ -240,7 +231,7 @@ for ax, label in zip(axes, labels):
 
     fig.text(
         bbox.x0 + bbox.width / 2,
-        bbox.y0 - 0.02,
+        bbox.y0 - 0.05,
         label,
         ha="center",
         va="top",
