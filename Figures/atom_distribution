@@ -1,0 +1,192 @@
+import pandas as pd
+import numpy as np
+from rdkit import Chem
+import matplotlib.pyplot as plt
+from collections import Counter
+
+# =============================================================================
+# Input files
+# =============================================================================
+
+FULL_DATASET = "/scratch/prj/rcmb_genai_transition/chembl_db/filtered_organic_smiles.csv"
+SAMPLE_DATASET = "/scratch/prj/rcmb_genai_transition/chembl_db/50k_dataset/dataset/molecule_list.csv"
+
+# Elements to assess
+ELEMENTS = ["H", "B", "C", "N", "O", "F", "P", "S", "Cl", "Br", "I"]
+
+# Elements to display in the figure
+# (H and C are usually ~100% in organic datasets and can dominate the plot)
+PLOT_ELEMENTS = ["B", "N", "O", "F", "P", "S", "Cl", "Br", "I"]
+
+# =============================================================================
+# Functions
+# =============================================================================
+
+def get_element_presence_percentages(df, smiles_col):
+    """
+    Calculate the percentage of molecules containing each element.
+    """
+
+    total_molecules = len(df)
+
+    element_counts = Counter()
+    valid_molecules = 0
+
+    for smiles in df[smiles_col].dropna():
+
+        mol = Chem.MolFromSmiles(smiles)
+
+        if mol is None:
+            continue
+
+        valid_molecules += 1
+
+        present_elements = set()
+
+        # Collect all explicit atom types
+        for atom in mol.GetAtoms():
+            present_elements.add(atom.GetSymbol())
+
+        # Since dataset contains organic molecules,
+        # hydrogen is implicitly present
+        present_elements.add("H")
+
+        for elem in ELEMENTS:
+            if elem in present_elements:
+                element_counts[elem] += 1
+
+    percentages = {
+        elem: (element_counts[elem] / valid_molecules) * 100
+        for elem in ELEMENTS
+    }
+
+    return percentages, valid_molecules
+
+
+# =============================================================================
+# Load datasets
+# =============================================================================
+
+print("Loading datasets...")
+df_full = pd.read_csv(FULL_DATASET)
+df_sample = pd.read_csv(SAMPLE_DATASET)
+
+# Standardize column names
+df_full = df_full.rename(columns={"canonical_smiles": "smiles"})
+df_sample = df_sample.rename(columns={"smiles": "smiles"})
+
+print("\nFull dataset columns:")
+print(df_full.columns.tolist())
+
+print("\nSample dataset columns:")
+print(df_sample.columns.tolist())
+
+print(f"\nFull dataset size: {len(df_full):,}")
+print(f"Sample dataset size: {len(df_sample):,}")
+
+# =============================================================================
+# Calculate elemental composition
+# =============================================================================
+
+print("\nCalculating elemental composition...")
+
+full_pct, full_valid = get_element_presence_percentages(df_full, "smiles")
+sample_pct, sample_valid = get_element_presence_percentages(df_sample, "smiles")
+
+print(f"Valid molecules in full dataset: {full_valid:,}")
+print(f"Valid molecules in sample dataset: {sample_valid:,}")
+
+# =============================================================================
+# Create results table
+# =============================================================================
+
+results_df = pd.DataFrame({
+    "Element": ELEMENTS,
+    "Full_dataset_%": [full_pct[e] for e in ELEMENTS],
+    "Sample_50k_%": [sample_pct[e] for e in ELEMENTS]
+})
+
+results_df["Absolute_difference_%"] = (
+    results_df["Sample_50k_%"] - results_df["Full_dataset_%"]
+).abs()
+
+results_df = results_df.round(3)
+
+print("\nElemental composition comparison:")
+print(results_df)
+
+# Save table
+results_df.to_csv(
+    "elemental_composition_comparison.csv",
+    index=False
+)
+
+# =============================================================================
+# Plot figure
+# =============================================================================
+
+plot_df = results_df[
+    results_df["Element"].isin(PLOT_ELEMENTS)
+].copy()
+
+x = np.arange(len(plot_df))
+width = 0.38
+
+fig, ax = plt.subplots(figsize=(10, 5))
+
+ax.bar(
+    x - width / 2,
+    plot_df["Full_dataset_%"],
+    width,
+    label="Full filtered ChEMBL dataset",
+    color="royalblue"
+)
+
+ax.bar(
+    x + width / 2,
+    plot_df["Sample_50k_%"],
+    width,
+    label="50k training sample",
+    color="orangered"
+)
+
+ax.set_ylabel("Molecules containing element (%)")
+ax.set_xlabel("Element")
+ax.set_title("Comparison of elemental composition between datasets")
+
+ax.set_xticks(x)
+ax.set_xticklabels(plot_df["Element"])
+
+ax.legend()
+plt.tight_layout()
+
+plt.savefig(
+    "elemental_composition_comparison.png",
+    dpi=300,
+    bbox_inches="tight"
+)
+
+plt.show()
+
+# =============================================================================
+# Create thesis-ready table
+# =============================================================================
+
+table_df = results_df.copy()
+table_df.columns = [
+    "Element",
+    "Full dataset (%)",
+    "50k sample (%)",
+    "Absolute difference (%)"
+]
+
+table_df.to_csv(
+    "table_elemental_composition_for_thesis.csv",
+    index=False
+)
+
+print("\nFiles saved:")
+print(" - elemental_composition_comparison.csv")
+print(" - table_elemental_composition_for_thesis.csv")
+print(" - elemental_composition_comparison.png")
+
