@@ -9,9 +9,7 @@ from rdkit import Chem
 from rdkit.Chem import AllChem
 from rdkit.Chem.Draw import rdMolDraw2D
 
-# -----------------------------
 # INPUT
-# -----------------------------
 input_path = "/scratch/prj/rcmb_genai_transition/chembl_36/chembl_36_sqlite/chembl_36_smiles.csv"
 chunk_size = 100000
 
@@ -39,26 +37,20 @@ for chunk in pd.read_csv(input_path, chunksize=chunk_size):
             heavy_atoms_list.append(ha)
             smiles_list.append(smi)
 
-# -----------------------------
 # DATASET
-# -----------------------------
 df_all = pd.DataFrame(
     {"smiles": smiles_list, "heavy_atoms": heavy_atoms_list}
 )
 
 print(f"Total valid molecules: {len(df_all)}")
 
-# -----------------------------
 # SETTINGS
-# -----------------------------
 cutoff = 34
 
 x_max = int(np.ceil(df_all["heavy_atoms"].quantile(0.99)))
 df_plot = df_all[df_all["heavy_atoms"] <= x_max]
 
-# -----------------------------
 # REPRESENTATIVES
-# -----------------------------
 df_sorted = df_all.sort_values("heavy_atoms").reset_index(drop=True)
 
 smallest = df_sorted.iloc[int(len(df_sorted) * 0.01)]
@@ -101,9 +93,7 @@ labels = [
     f"Largest molecule\n{largest['heavy_atoms']} heavy atoms",
 ]
 
-# -----------------------------
 # RDKit RENDERING (BIG + COLORED)
-# -----------------------------
 def trim(im):
     """Crop away white borders."""
     bg = Image.new(im.mode, im.size, (255, 255, 255))
@@ -151,9 +141,7 @@ mol_images = [
     draw_scaled_molecule(mols[2], size=(3500, 5000), padding=0.0, scale=1.6),   # much larger
 ]
 
-# -----------------------------
 # FIGURE LAYOUT
-# -----------------------------
 fig = plt.figure(figsize=(15, 16), dpi=200)
 
 gs = fig.add_gridspec(
@@ -161,9 +149,8 @@ gs = fig.add_gridspec(
     height_ratios=[3.0, 3.0, 0.15, 0.5, 7.5]
 )
 
-# -----------------------------
+
 # PANEL A
-# -----------------------------
 ax1 = fig.add_subplot(gs[:2, :])
 
 bins = np.arange(0, x_max + 2, 2)
@@ -180,9 +167,7 @@ ax1.set_xlabel("Heavy atom count", fontsize=20)
 ax1.set_ylabel("Number of molecules", fontsize=20)
 ax1.tick_params(labelsize=16)
 
-# -----------------------------
 # TITLE
-# -----------------------------
 ax_title = fig.add_subplot(gs[3, :])
 ax_title.axis("off")
 
@@ -194,9 +179,7 @@ ax_title.text(
     fontsize=26,
 )
 
-# -----------------------------
 # PANEL B
-# -----------------------------
 
 gs_bottom = gs[4, :].subgridspec(
     2, 2,
@@ -215,9 +198,7 @@ ax_large = fig.add_subplot(gs_bottom[1, :])
 
 axes = [ax_small, ax_median, ax_large]
 
-# -----------------------------
 # IMAGES
-# -----------------------------
 
 for i, (ax, img) in enumerate(zip(axes, mol_images)):
 
@@ -251,9 +232,8 @@ for i, (ax, img) in enumerate(zip(axes, mol_images)):
     ax.set_xlim(0, img.width)
     ax.axis("off")
     ax.set_anchor("C")
-# -----------------------------
+
 # LABELS
-# -----------------------------
 
 fig.canvas.draw()
 
@@ -269,9 +249,8 @@ for ax, label in zip(axes, labels):
         va="top",
         fontsize=15,
     )
-# -----------------------------
-# FINAL SPACING
-# -----------------------------
+
+# SPACING
 plt.subplots_adjust(
     top=0.95,
     bottom=0.08,
