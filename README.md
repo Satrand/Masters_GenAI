@@ -4,6 +4,7 @@ This repository contains all scripts developed and used for developing a process
 
 * **Processing_Pipeline/** – Scripts used to generate the machine learning training dataset from ChEMBL.
 * **CVAE_Model/** – Scripts used to train and evaluate the conditional variational autoencoder (CVAE).
+* **Figures/** – Scripts and supporting files used to generate figures presented in the dissertation.
 * **Intermediate/** – Miscellaneous development and exploratory scripts retained for reference.
 
 **Note:** Due to storage limitations, the processed training dataset is not publicly hosted in this repository. However, the complete processing pipeline required to regenerate the dataset from the ChEMBL database is provided.
@@ -81,6 +82,20 @@ This directory contains the implementation of the CVAE used for molecular genera
 * **generate.py** – Generates molecules from a trained model.
 * **slurm_pytorch.sh** – SLURM batch script for HPC training.
 * **Generate_molecule** – Launches TensorBoard for training visualisation and generates molecules using the trained model.
+
+---
+
+# Figures
+
+This directory contains  scripts and supporting files used to generate figures presented in the dissertation.
+
+The contents include:
+
+- scripts for plotting and visualisation
+- processed data files required to reproduce figures
+- supporting files used during figure generation
+
+These files are provided to ensure transparency and reproducibility of the figures included in the dissertation.
 
 ---
 
