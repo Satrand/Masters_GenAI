@@ -89,7 +89,8 @@ This directory contains the implementation of the CVAE used for molecular genera
 
 This directory contains  scripts and supporting files used to generate figures presented in the dissertation.
 
-The **molecules/** subdirectory contains the files used to generate molecular visualisations included in the dissertation. These files correspond to molecules processed through the pipeline and visualised using Chimera.
+The **molecules/** subdirectory contains the files used to generate molecular visualisations included in the dissertation. These files correspond to molecules processed through the pipeline and visualised using UCSF ChimeraX.
+.
 
 For each visualised molecule, the directory contains:
 
